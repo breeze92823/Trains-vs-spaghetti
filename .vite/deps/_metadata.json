@@ -1,0 +1,91 @@
+{
+  "hash": "9d6ff171",
+  "configHash": "5247d21c",
+  "lockfileHash": "6dda63e2",
+  "browserHash": "078c7561",
+  "optimized": {
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "f7a4080e",
+      "needsInterop": false
+    },
+    "@dimforge/rapier3d-compat": {
+      "src": "../../node_modules/@dimforge/rapier3d-compat/rapier.es.js",
+      "file": "@dimforge_rapier3d-compat.js",
+      "fileHash": "05518606",
+      "needsInterop": false
+    },
+    "three/examples/jsm/postprocessing/EffectComposer.js": {
+      "src": "../../node_modules/three/examples/jsm/postprocessing/EffectComposer.js",
+      "file": "three_examples_jsm_postprocessing_EffectComposer__js.js",
+      "fileHash": "d16db236",
+      "needsInterop": false
+    },
+    "three/examples/jsm/postprocessing/OutputPass.js": {
+      "src": "../../node_modules/three/examples/jsm/postprocessing/OutputPass.js",
+      "file": "three_examples_jsm_postprocessing_OutputPass__js.js",
+      "fileHash": "45e71b6a",
+      "needsInterop": false
+    },
+    "three/examples/jsm/postprocessing/RenderPass.js": {
+      "src": "../../node_modules/three/examples/jsm/postprocessing/RenderPass.js",
+      "file": "three_examples_jsm_postprocessing_RenderPass__js.js",
+      "fileHash": "c060a3b4",
+      "needsInterop": false
+    },
+    "three/examples/jsm/postprocessing/UnrealBloomPass.js": {
+      "src": "../../node_modules/three/examples/jsm/postprocessing/UnrealBloomPass.js",
+      "file": "three_examples_jsm_postprocessing_UnrealBloomPass__js.js",
+      "fileHash": "b38ae997",
+      "needsInterop": false
+    },
+    "three/examples/jsm/utils/BufferGeometryUtils.js": {
+      "src": "../../node_modules/three/examples/jsm/utils/BufferGeometryUtils.js",
+      "file": "three_examples_jsm_utils_BufferGeometryUtils__js.js",
+      "fileHash": "070c275a",
+      "needsInterop": false
+    },
+    "three/examples/jsm/loaders/OBJLoader.js": {
+      "src": "../../node_modules/three/examples/jsm/loaders/OBJLoader.js",
+      "file": "three_examples_jsm_loaders_OBJLoader__js.js",
+      "fileHash": "bbbb5c54",
+      "needsInterop": false
+    },
+    "three/examples/jsm/loaders/GLTFLoader.js": {
+      "src": "../../node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+      "file": "three_examples_jsm_loaders_GLTFLoader__js.js",
+      "fileHash": "426b9531",
+      "needsInterop": false
+    },
+    "three/examples/jsm/utils/SkeletonUtils.js": {
+      "src": "../../node_modules/three/examples/jsm/utils/SkeletonUtils.js",
+      "file": "three_examples_jsm_utils_SkeletonUtils__js.js",
+      "fileHash": "6533cd16",
+      "needsInterop": false
+    },
+    "@colyseus/sdk": {
+      "src": "../../node_modules/@colyseus/sdk/build/index.mjs",
+      "file": "@colyseus_sdk.js",
+      "fileHash": "fb34c41b",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-YZ7RHIIL": {
+      "file": "chunk-YZ7RHIIL.js"
+    },
+    "chunk-EJYJHC2I": {
+      "file": "chunk-EJYJHC2I.js"
+    },
+    "chunk-HYE3HEBL": {
+      "file": "chunk-HYE3HEBL.js"
+    },
+    "chunk-CJFHYH26": {
+      "file": "chunk-CJFHYH26.js"
+    },
+    "chunk-4YJ6HKSX": {
+      "file": "chunk-4YJ6HKSX.js"
+    }
+  }
+}

@@ -1,10 +1,10 @@
-import { CONTAINERS, DISPLAY_TRAINS, GAME_SETTINGS, levelXp, POWER_GAIN, QUESTS, RAILCAR_TYPES, RAILCARS, REBIRTH, SAVE_KEY, SHOP, START_STATE, TITLES } from './config.js'
+import { CONTAINERS, DISPLAY_TRAINS, GAME_SETTINGS, levelXp, POWER_GAIN, QUESTS, RAILCAR_TYPES, RAILCARS, REBIRTH, SHOP, START_STATE, TITLES } from './config.js'
 import * as bloxity from './bloxity.js'
 
 // Game state: power, level / xp, wins, rebirths, autopilot, titles, railcars,
 // daily quests and the in-game settings. Power gains go through earnPower(),
 // which applies the rebirth x title x railcar multiplier (powerMult). The
-// saved part goes to localStorage (SAVE_KEY) until the server keeps saves.
+// saved part goes to the server only (no localStorage).
 const SAVED = ['power', 'level', 'xp', 'wins', 'rebirths', 'titlesOwned', 'title', 'railcars', 'nextUid', 'singles', 'stock', 'quests', 'settings', 'trainsOwned', 'train', 'playtime']
 
 export const state = {
@@ -23,16 +23,7 @@ export const state = {
   train: SHOP.startTrain, // the equipped one: the player drives it, it sets the treadmill power
 }
 
-function load() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY)
-    if (!raw) return
-    applySaved(JSON.parse(raw))
-  } catch {
-    // a broken save starts fresh
-  }
-}
-// Copies a saved snapshot (localStorage, or the server's `progress`) into the state.
+// Copies a saved snapshot (the server's `progress`) into the state.
 function applySaved(s) {
   try {
     for (const k of SAVED) if (s[k] !== undefined) state[k] = s[k]
@@ -47,14 +38,12 @@ function applySaved(s) {
     // a broken save starts fresh
   }
 }
-load()
-
-// Online (net.js): the whole saved snapshot, and a sink that takes over from localStorage once the
-// server has answered with this account's save (a guest keeps the localStorage mirror too).
+// Online (net.js): the whole saved snapshot, and a sink that sends it to the server. There is no
+// local save: progress lives only on the backend, a fresh player starts from START_STATE.
 export const snapshot = () => Object.fromEntries(SAVED.map((k) => [k, state[k]]))
 let saveSink = null
-export function setSaveSink(fn, { mirror = false } = {}) {
-  saveSink = fn ? { fn, mirror } : null
+export function setSaveSink(fn) {
+  saveSink = fn ? { fn } : null
 }
 // The server's save replaces the local one; listeners are told but nothing is written back.
 export function hydrate(doc) {
@@ -67,18 +56,11 @@ let saveTimer = 0
 function save() {
   clearTimeout(saveTimer)
   saveTimer = setTimeout(() => {
-    if (saveSink) {
-      try {
-        saveSink.fn(snapshot())
-      } catch {
-        // the net layer must never break the game
-      }
-      if (!saveSink.mirror) return
-    }
+    if (!saveSink) return
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot()))
+      saveSink.fn(snapshot())
     } catch {
-      // storage full / blocked: keep playing
+      // the net layer must never break the game
     }
   }, 400)
 }

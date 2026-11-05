@@ -5,9 +5,9 @@
 // - Reaches the server through the Bloxity matchmaker (bloxity.resolveServerEndpoint: a new
 //   Client per resolve, retried with backoff for ~60 s). Without the SDK (dev, blocked CDN) it
 //   tries ws://localhost:2567 (or VITE_SERVER_URL) a couple of times and then stays offline
-//   quietly; the game keeps its localStorage save in that case.
+//   quietly; progress is not saved in that case.
 // - Save: the server's Mongo doc is the only save for a signed-in player (game.js hydrate /
-//   setSaveSink). A guest keeps the localStorage mirror too. Nothing is written until the
+//   setSaveSink). No localStorage. Nothing is written until the
 //   server answered with `progress` / `noProgress`.
 // - Presence: `pose` ~10/s, `loadout` and `setAvatar` on change; the others come back through
 //   the roster (net.players(), read by remotePlayers.js).
@@ -78,9 +78,8 @@ export function startNet({ getPose, getTraining } = {}) {
     lastSaved = json
     send('saveProgress', snap)
   }
-  const signedIn = () => !bloxity.userId().startsWith('guest-')
   function attachSink() {
-    setSaveSink(() => saveNow(), { mirror: !signedIn() })
+    setSaveSink(() => saveNow())
   }
 
   // --- Identity -----------------------------------------------------------------
@@ -200,13 +199,13 @@ export function startNet({ getPose, getTraining } = {}) {
       net.loaded = true
       lastSaved = ''
       attachSink()
-      saveNow() // a new account starts from what this browser has
+      saveNow() // a new account starts from the defaults
       notify()
     })
     room.onMessage('serverError', () => {
       // The save could not be read: never overwrite it. Playing on, unsaved.
       net.loaded = false
-      setSaveSink(() => {}, { mirror: false })
+      setSaveSink(() => {})
     })
     room.onMessage('leaderboard', (data) => {
       if (!data?.boards) return

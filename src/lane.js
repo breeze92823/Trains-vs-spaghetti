@@ -525,7 +525,12 @@ export function buildLane(scene, camera, { onSmash, onHold, onReward, onEnter } 
   const RT = L.track
   for (let tz = L.start - 0.6; tz > L.end + 0.6; tz -= 1.15) blk(statics, sleeper, RT.sleeperWidth, RT.railTop - 0.22, 0.5, 0, 0, tz)
   for (const x of [-RT.halfGauge, RT.halfGauge]) blk(statics, rail, 0.22, 0.22, Math.abs(L.end - L.start), x, RT.railTop - 0.22, (L.start + L.end) / 2)
-  addFixed(RAPIER.ColliderDesc.cuboid(30, 1, (L.start - L.end) / 2 + 4), { x: 0, y: -1, z: (L.start + L.end) / 2 }, null, { friction: 0.9 })
+  // The floor collider in short overlapping pieces: one 7 km box is too big for Rapier's f32
+  // contact maths, and far from its centre the train sank ~0.3 m into the floor (from Level 8 on).
+  const FLOOR_PIECE = 60
+  for (let za = L.start + 4; za > L.end - 4; za -= FLOOR_PIECE) {
+    addFixed(RAPIER.ColliderDesc.cuboid(30, 1, FLOOR_PIECE / 2 + 0.5), { x: 0, y: -1, z: za - FLOOR_PIECE / 2 }, null, { friction: 0.9 })
+  }
 
   for (const [g, cast] of [
     [statics, false],

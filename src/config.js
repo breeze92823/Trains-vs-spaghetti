@@ -416,8 +416,8 @@ export const SHOP = {
   holdTime: 2, // s E (or a finger on the prompt) is held to buy / equip
   range: 5.5, // m from a pad's centre (horizontal) within which its prompt shows
   reachY: 3, // m of height difference still in reach (a tier above or below)
-  startOwned: [0, 1], // train indices a fresh save owns
-  startTrain: 1, // equipped on a fresh save (the green steam engine)
+  startOwned: [0], // train indices a fresh save owns
+  startTrain: 0, // equipped on a fresh save (the red starter, power 1: the 1x belt pays +1 at rebirth 0)
   pad: { owned: '#2f7cff', equipped: '#33d14a', locked: '#ff3b3b' }, // pad top colour by state
 }
 
@@ -438,9 +438,9 @@ export const PUMPKIN = { x: -23, z: 45, radius: 2.6 }
 export const PLAYER_TRAIN = { kind: 'steam', body: '#2f8f3a', boiler: '#1e1e22', trim: '#43c94f', wheel: '#2f8f3a', roof: '#1e1e22', smoke: '#c9ffd8' }
 export const OFFLINE_NAME = 'ashanmwick2018' // name tag when there is no Bloxity user (dev / offline)
 
-// Progress shown on first load (the values in the reference screenshots); saves come later.
-export const START_STATE = { power: 1, level: 4, xp: 27, wins: 0, rebirths: 0 }
-export const levelXp = (level) => 50 * level // xp needed to finish `level` (4 -> 200)
+// A brand-new player: level 1, xp matches the 1 power. Saves live on the server only.
+export const START_STATE = { power: 1, level: 1, xp: 1, wins: 0, rebirths: 0 }
+export const levelXp = (level) => 50 * level // xp needed to finish `level` (1 -> 50)
 export const POWER_GAIN = { tick: 0.7 } // s between treadmill payouts; each pays the equipped train's power x the belt's mult
 
 // Training (training.js): rolling onto an unlocked treadmill locks the train onto the belt,
@@ -602,7 +602,6 @@ export const GAME_SETTINGS = [
   { key: 'wagons', label: "Other players' wagons" },
   { key: 'vfx', label: 'Visual effects' },
 ]
-export const SAVE_KEY = 'trains-vs-spaghetti-save-v1' // localStorage, until the server keeps saves
 
 // --- The train lane (lane.js), north through the gate --------------------------------
 // A white studded tunnel with a green floor and a track down the middle. Yellow brick
@@ -617,7 +616,7 @@ const LANE_ROOMS = Array.from({ length: LANE_ROOM_COUNT }, (_, i) => {
   const z0 = -110 - 72 * i
   const j = i - 3
   const wins = i < 3 ? [1, 2, 5][i] : [1, 2.5, 5][j % 3] * 10 ** (1 + Math.floor(j / 3))
-  return { z0, z1: z0 - 42, halfWidth: 24, treadmill: Math.min(i, TREADMILLS.length - 1), reward: { mult: wins, wins } }
+  return { z0, z1: z0 - 42, halfWidth: 24, treadmill: 0, /* every lane room has the 1x belt */ reward: { mult: wins, wins } }
 })
 
 export const LANE = {
