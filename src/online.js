@@ -87,14 +87,27 @@ export function startOnline({ scene, camera, playerGroup, driver, props, hud, ge
 
   // --- Leaderboards ---------------------------------------------------------------------
   const lb = props.leaderboards
-  net.onBoards((boards) => lb?.setData(boards))
-  // Server offline: fall back to Bloxity's own boards for the hub panels.
-  setTimeout(async () => {
-    if (net.boards || !bloxity.sdk()) return
+  // Hub panels show the game server's top list per stat; a stat the server has nothing for (offline,
+  // no database, empty) is filled from Bloxity's own board (getTop), refreshed every minute.
+  let bloxBoards = {}
+  const showBoards = () => {
+    const out = {}
+    for (const d of bloxity.LEADERBOARD_DEFS) {
+      const mine = net.boards?.[d.id]
+      out[d.id] = mine?.length ? mine : bloxBoards[d.id] ?? []
+    }
+    lb?.setData(out)
+  }
+  net.onBoards(showBoards)
+  async function pullBloxity() {
+    if (!bloxity.sdk()) return
     const data = {}
     for (const d of bloxity.LEADERBOARD_DEFS) data[d.id] = await bloxity.topScores(d.id, 7)
-    if (!net.boards) lb?.setData(data)
-  }, 6000)
+    bloxBoards = data
+    showBoards()
+  }
+  setTimeout(pullBloxity, 6000)
+  setInterval(pullBloxity, 60000)
   // Scores go to Bloxity's boards when they change (checked every 30 s, plus on leaving).
   const submitted = {}
   function submitScores() {

@@ -193,8 +193,9 @@ export function createRemotePlayers(scene, net, { onAction } = {}) {
       // The driver: their Bloxity look, driven by their speed.
       if (p.avatar !== e.avatar) {
         e.avatar = p.avatar
-        const look = p.avatar ? parseLook(p.avatar) : null
-        if (look) e.driver.setLook(look)
+        // No look yet (guest / avatar still loading): still seat the default Bloxity character.
+        const look = (p.avatar ? parseLook(p.avatar) : null) ?? { equipped: null, proportions: null, skin: '' }
+        e.driver.setLook(look)
       }
       if (p.emoteSeq !== e.emoteSeq) {
         e.emoteSeq = p.emoteSeq

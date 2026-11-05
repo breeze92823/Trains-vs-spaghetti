@@ -103,7 +103,7 @@ export function createDriver(holder, { onDepart, onStop, source = player, look =
   // A remote driver is dressed with the other player's look (their roster `avatar`).
   function setLook(next) {
     if (!remote) return
-    const same = JSON.stringify(next?.equipped) === JSON.stringify(remoteLook?.equipped) && (next?.skin ?? '') === (remoteLook?.skin ?? '')
+    const same = !!remoteLook && JSON.stringify(next?.equipped) === JSON.stringify(remoteLook?.equipped) && (next?.skin ?? '') === (remoteLook?.skin ?? '')
     const first = !remoteLook
     remoteLook = next
     if (first || !same) load()
