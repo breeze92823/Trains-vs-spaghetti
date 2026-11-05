@@ -203,8 +203,9 @@ function step(dt) {
   // The body turns toward its heading; in first person it always faces the view.
   if (isFirstPerson()) player.facing = yaw + Math.PI
   else if (player.training) player.facing = rotateTowards(player.facing, player.training.facing, PHYSICS.turnSpeed * dt)
-  else if (player.autoRun && Math.hypot(player.velocity.x, player.velocity.z) > 0.5) {
-    player.facing = rotateTowards(player.facing, Math.atan2(player.velocity.x, player.velocity.z), PHYSICS.turnSpeed * dt)
+  else if (player.autoRun) {
+    // Face the run's heading, not the velocity: a wall's knockback bounce must not spin the train round.
+    player.facing = rotateTowards(player.facing, Math.atan2(player.autoRun.x, player.autoRun.z), PHYSICS.turnSpeed * dt)
   }
   else if (Math.hypot(wishX, wishZ) > 0.05) {
     player.facing = rotateTowards(player.facing, Math.atan2(wishX, wishZ), PHYSICS.turnSpeed * dt)

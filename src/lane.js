@@ -51,6 +51,8 @@ const HW = L.halfWidth
 const OUT = L.outer
 const H = L.height
 const TOP = HUB.tier2Height
+// The far-grass slab's underside sits at H; the ceiling drops this far below it so the two faces never z-fight (green stripes).
+const CEIL_DROP = 0.06
 const S = L.stick
 const WALL_H = S.layers * S.height
 const WALL_D = S.rowsDeep * S.depth
@@ -479,7 +481,7 @@ export function buildLane(scene, camera, { onSmash, onHold, onReward, onEnter } 
     floorPiece(statics, -HW, zb, HW, za)
     wallBox(statics, wallMat, -OUT, -HW, za, zb)
     wallBox(statics, wallMat, HW, OUT, za, zb)
-    blk(statics, wallMat, OUT * 2, TOP - H - 0.1, Math.abs(za - zb), 0, H, (za + zb) / 2) // ceiling (just under the far grass)
+    blk(statics, wallMat, OUT * 2, TOP - H - 0.1 + CEIL_DROP, Math.abs(za - zb), 0, H - CEIL_DROP, (za + zb) / 2) // ceiling (just under the far grass)
   }
   const zones = []
   const rewards = []
@@ -509,7 +511,7 @@ export function buildLane(scene, camera, { onSmash, onHold, onReward, onEnter } 
       wallBox(statics, wallMat, s * HW, s * (rw + 3), room.z0 + 2, room.z0) // south end, either side of the tunnel mouth
       wallBox(statics, blockMat, s * HW, s * rw, room.z1, room.z1 - L.passage, H) // blue blocks narrowing to the passage
     }
-    blk(statics, wallMat, (rw + 3) * 2, TOP - H - 0.1, Math.abs(room.z0 - room.z1) + L.passage, 0, H, (room.z0 + room.z1 - L.passage) / 2)
+    blk(statics, wallMat, (rw + 3) * 2, TOP - H - 0.1 + CEIL_DROP, Math.abs(room.z0 - room.z1) + L.passage, 0, H - CEIL_DROP, (room.z0 + room.z1 - L.passage) / 2)
     // Treadmill on the west side, its headboard against the wall.
     const t = buildTreadmill(scene, shadowed, live, TREADMILLS[room.treadmill], { cx: -rw + 7.5, cz: zc, dir: -1, index: 50 + i })
     zones.push(t.zone)
