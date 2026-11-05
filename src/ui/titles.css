@@ -1,0 +1,132 @@
+/* Titles window (titles.js). Design px x --wu; row layout from the reference. */
+.tt-window {
+  --W: 1096;
+  --H: 602;
+  --Wp: 760;
+  --Hp: 1000;
+}
+.tt-list {
+  padding: calc(10 * var(--wu)) 0 calc(30 * var(--wu));
+  /* landscape row layout (x from the row's left edge) */
+  --rh: 160;
+  --nx: 18;
+  --nw: 376;
+  --px: 508;
+  --ex: 650;
+  --ew: 310;
+  --et: 48;
+  --bx: 682;
+  --bw: 280;
+  --bh: 56;
+  --b1: 13;
+  --b2: 86;
+}
+.portrait .tt-list {
+  --rh: 196;
+  --nx: 10;
+  --nw: 282;
+  --px: 340;
+  --ex: 404;
+  --ew: 256;
+  --et: 58;
+  --bx: 412;
+  --bw: 248;
+  --bh: 74;
+  --b1: 12;
+  --b2: 104;
+}
+.tt-row {
+  height: calc(var(--rh) * var(--wu));
+  margin-bottom: calc(55 * var(--wu));
+}
+.portrait .tt-row {
+  margin-bottom: calc(30 * var(--wu));
+}
+.tt-name {
+  position: absolute;
+  left: calc(var(--nx) * var(--wu));
+  top: 0;
+  bottom: 0;
+  width: calc(var(--nw) * var(--wu));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: calc(var(--fs, 60) * var(--wu));
+  line-height: 1.04;
+  white-space: normal;
+  --ow: 3.4;
+}
+.tt-mult {
+  position: absolute;
+  left: calc((var(--px) - 80) * var(--wu));
+  width: calc(160 * var(--wu));
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(4 * var(--wu));
+}
+.tt-x {
+  font-size: max(11px, calc(32 * var(--wu)));
+  --ow: 2.6;
+}
+.tt-pw {
+  font-size: max(10px, calc(26 * var(--wu)));
+  --ow: 2.4;
+}
+.tt-equip {
+  position: absolute;
+  left: calc(var(--ex) * var(--wu));
+  top: calc(var(--et) * var(--wu));
+  width: calc(var(--ew) * var(--wu));
+  height: calc(var(--bh) * var(--wu));
+  min-height: 30px;
+}
+.tt-equip-text {
+  font-size: max(11px, calc(28 * var(--wu)));
+  letter-spacing: calc(0.5 * var(--wu));
+  --ow: 2.4;
+}
+.tt-buy {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.tt-wins,
+.tt-gems {
+  position: absolute;
+  left: calc(var(--bx) * var(--wu));
+  width: calc(var(--bw) * var(--wu));
+  height: calc(var(--bh) * var(--wu));
+  min-height: 26px;
+  pointer-events: auto;
+}
+.tt-wins {
+  top: calc(var(--b1) * var(--wu));
+}
+.tt-gems {
+  top: calc(var(--b2) * var(--wu));
+}
+.tt-trophy {
+  position: absolute;
+  left: calc(-28 * var(--wu));
+  top: calc(-12 * var(--wu));
+  width: calc(78 * var(--wu));
+  height: calc(78 * var(--wu));
+  filter: drop-shadow(0 calc(3 * var(--wu)) 0 rgba(0, 0, 0, 0.3));
+}
+.tt-hex {
+  position: absolute;
+  left: calc(10 * var(--wu));
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(44 * var(--wu));
+  height: calc(44 * var(--wu));
+}
+.tt-val {
+  font-size: max(12px, calc(38 * var(--wu)));
+  --ow: 3;
+}

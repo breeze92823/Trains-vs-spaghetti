@@ -1,0 +1,225 @@
+/* Railcars window (railcars.js). Design px x --wu, from the reference. */
+.rc-window {
+  --W: 1255;
+  --H: 604;
+  --Wp: 760;
+  --Hp: 604;
+  --X: 92; /* the restock bar under the body */
+  --pb: 0;
+}
+.rc-body {
+  overflow: hidden;
+  touch-action: pan-x;
+}
+.rc-strip {
+  display: flex;
+  gap: calc(22 * var(--wu));
+  height: 100%;
+  padding: calc(14 * var(--wu)) calc(26 * var(--wu)) 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-x;
+  scrollbar-width: auto;
+  scrollbar-color: rgba(235, 235, 240, 0.85) rgba(0, 0, 0, 0.15);
+}
+.rc-strip::-webkit-scrollbar {
+  height: calc(10 * var(--wu));
+}
+.rc-strip::-webkit-scrollbar-thumb {
+  background: rgba(235, 235, 240, 0.85);
+  border-radius: 99px;
+}
+.rc-card {
+  position: relative;
+  flex: none;
+  width: calc(426 * var(--wu));
+  height: calc(546 * var(--wu));
+  background: rgba(8, 8, 10, 0.34);
+  border: max(1px, calc(2 * var(--wu))) solid rgba(255, 255, 255, 0.05);
+}
+.rc-card.op {
+  animation: rc-op 3s ease-in-out infinite;
+}
+@keyframes rc-op {
+  0%, 100% { background: #3ce83a; }
+  50% { background: #3ae8a2; }
+}
+.rc-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(12 * var(--wu));
+  text-align: center;
+  font-size: calc(var(--fs, 44) * var(--wu));
+  --ow: 3.2;
+}
+.rc-rarity {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(66 * var(--wu));
+  text-align: center;
+  font-size: calc(32 * var(--wu));
+  --ow: 2.6;
+}
+.rc-pic {
+  position: absolute;
+  left: 50%;
+  top: calc(126 * var(--wu));
+  width: calc(230 * var(--wu));
+  height: calc(196 * var(--wu));
+  transform: translateX(-50%);
+}
+.rc-pic .ct-svg {
+  filter: drop-shadow(0 0 calc(4 * var(--wu)) var(--glow)) drop-shadow(0 calc(4 * var(--wu)) 0 rgba(0, 0, 0, 0.35));
+}
+.rc-stock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(334 * var(--wu));
+  text-align: center;
+  font-size: calc(30 * var(--wu));
+  font-weight: 600;
+  color: #cfcfd2;
+  --oc: rgba(30, 30, 34, 0.9);
+  --ow: 1.6;
+  text-shadow: none;
+}
+.rc-stock.single {
+  color: #a8f0a0;
+  --oc: #4a7a4a;
+}
+.rc-odds,
+.rc-buy {
+  position: absolute;
+  left: calc(6 * var(--wu));
+  right: calc(6 * var(--wu));
+}
+.rc-odds {
+  top: calc(386 * var(--wu));
+  height: calc(64 * var(--wu));
+  min-height: 28px;
+}
+.rc-buy {
+  top: calc(460 * var(--wu));
+  height: calc(76 * var(--wu));
+  min-height: 34px;
+  --c: #2ee62e;
+}
+.rc-odds-text {
+  font-size: calc(33 * var(--wu));
+  --ow: 2.4;
+}
+.rc-buy-text {
+  display: flex;
+  align-items: center;
+  font-size: calc(38 * var(--wu));
+  --ow: 3;
+}
+.rc-buy-text .gw-ol {
+  --ow: 3;
+}
+.rc-restock {
+  margin: calc(16 * var(--wu)) auto 0;
+  width: calc(670 * var(--wu));
+  height: calc(58 * var(--wu));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(36, 70, 26, 0.72);
+  border: max(2px, calc(4 * var(--wu))) solid #1a1a1c;
+  box-shadow: inset 0 0 0 calc(3 * var(--wu)) rgba(255, 255, 255, 0.08);
+}
+.rc-restock-text {
+  font-size: calc(38 * var(--wu));
+  --ow: 2.6;
+}
+
+/* Odds / reveal panel over the cards. */
+.rc-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 8, 14, 0.9);
+}
+.rc-odds-box,
+.rc-reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(12 * var(--wu));
+  width: min(92%, calc(820 * var(--wu)));
+}
+.rc-odds-title {
+  font-size: calc(48 * var(--wu));
+  margin-bottom: calc(10 * var(--wu));
+  --ow: 3;
+}
+.rc-odds-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: calc(22 * var(--wu));
+  width: 100%;
+  padding: calc(14 * var(--wu)) calc(22 * var(--wu));
+  background: rgba(255, 255, 255, 0.08);
+  border: max(1px, calc(3 * var(--wu))) solid rgba(0, 0, 0, 0.6);
+}
+.rc-odds-name {
+  font-size: calc(36 * var(--wu));
+  --ow: 2.6;
+}
+.rc-odds-rarity,
+.rc-odds-mult {
+  font-size: calc(28 * var(--wu));
+  --ow: 2.2;
+}
+.rc-odds-pct {
+  font-size: calc(36 * var(--wu));
+  min-width: calc(90 * var(--wu));
+  text-align: right;
+  --ow: 2.6;
+}
+.rc-back {
+  margin-top: calc(12 * var(--wu));
+  width: calc(300 * var(--wu));
+  height: calc(72 * var(--wu));
+  min-height: 34px;
+}
+.rc-back-text {
+  font-size: calc(36 * var(--wu));
+  --ow: 2.8;
+}
+.rc-reveal-head {
+  font-size: calc(40 * var(--wu));
+  --ow: 2.8;
+}
+.rc-reveal-pic {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  animation: rc-wiggle 0.5s ease-out;
+}
+@keyframes rc-wiggle {
+  0% { transform: scale(0.4) rotate(-10deg); }
+  50% { transform: scale(1.15) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.rc-reveal-name {
+  font-size: calc(58 * var(--wu));
+  --ow: 3.4;
+}
+.rc-reveal-rarity {
+  font-size: calc(34 * var(--wu));
+  --ow: 2.6;
+}
+.rc-reveal-mult {
+  font-size: calc(34 * var(--wu));
+  --ow: 2.6;
+}

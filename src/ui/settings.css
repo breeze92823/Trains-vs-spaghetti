@@ -1,0 +1,54 @@
+/* Settings window (settings.js). Design px x --wu, from the reference. */
+.st-window {
+  --W: 1096;
+  --H: 602;
+  --Wp: 760;
+  --Hp: 760;
+}
+.st-list {
+  padding-top: calc(9 * var(--wu));
+  --tx: 693;
+  --tw: 284;
+}
+.portrait .st-list {
+  --tx: 470;
+  --tw: 196;
+}
+.st-row {
+  height: calc(162 * var(--wu));
+  margin-bottom: calc(25 * var(--wu));
+}
+.st-label {
+  position: absolute;
+  left: calc(30 * var(--wu));
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: calc(var(--fs, 60) * var(--wu));
+  --ow: 3.2;
+}
+.st-toggle {
+  position: absolute;
+  left: calc(var(--tx) * var(--wu));
+  top: 50%;
+  margin-top: calc(-47 * var(--wu));
+  width: calc(var(--tw) * var(--wu));
+  height: calc(94 * var(--wu));
+  min-height: 40px;
+  --sp: 24;
+}
+.st-toggle:active {
+  transform: translateY(calc(2 * var(--wu))) scale(0.97);
+}
+.st-toggle-text {
+  font-size: calc(46 * var(--wu));
+  --ow: 3;
+}
+.st-version {
+  display: block;
+  margin: calc(-14 * var(--wu)) 0 calc(14 * var(--wu)) calc(24 * var(--wu));
+  font-size: max(10px, calc(24 * var(--wu)));
+  color: #9a9aa0;
+  --oc: rgba(0, 0, 0, 0.4);
+  --ow: 0.8;
+  text-shadow: none;
+}

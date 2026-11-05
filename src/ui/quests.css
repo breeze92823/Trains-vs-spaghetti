@@ -1,0 +1,129 @@
+/* Quests window (quests.js). Design px x --wu, from the reference. */
+.qs-window {
+  --W: 1096;
+  --H: 602;
+  --Wp: 760;
+  --Hp: 640;
+}
+.qs-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  --cw: 1004;
+  --cx: 518;
+  --cbw: 222;
+  --sx: 752;
+  --sbw: 224;
+  --bw: 452;
+}
+.portrait .qs-body {
+  --cw: 700;
+  --cx: 346;
+  --cbw: 168;
+  --sx: 522;
+  --sbw: 168;
+  --bw: 344;
+}
+.qs-reset {
+  margin: calc(8 * var(--wu)) 0 calc(14 * var(--wu));
+  font-size: calc(32 * var(--wu));
+  --ow: 2.6;
+}
+.qs-card {
+  position: relative;
+  flex: none;
+  width: calc(var(--cw) * var(--wu));
+  height: calc(155 * var(--wu));
+  margin-bottom: calc(17 * var(--wu));
+  background: linear-gradient(var(--top), var(--bottom));
+  border: max(2px, calc(4 * var(--wu))) solid var(--rim);
+  box-shadow: 0 0 0 max(1px, calc(3 * var(--wu))) rgba(20, 16, 22, 0.8);
+}
+.qs-text {
+  position: absolute;
+  left: calc(20 * var(--wu));
+  top: calc(8 * var(--wu));
+  display: flex;
+  flex-direction: column;
+  gap: calc(14 * var(--wu));
+}
+.qs-label {
+  font-size: calc(33 * var(--wu));
+  font-weight: 500;
+  --ow: 1.8;
+  text-shadow: none;
+}
+.qs-task {
+  font-size: calc(32 * var(--wu));
+  --ow: 2.2;
+}
+.qs-reward {
+  font-size: calc(30 * var(--wu));
+  font-weight: 600;
+  --ow: 2.2;
+}
+.qs-claim,
+.qs-skip {
+  position: absolute;
+  top: calc(10 * var(--wu));
+  height: calc(72 * var(--wu));
+  min-height: 30px;
+}
+.qs-claim {
+  left: calc(var(--cx) * var(--wu));
+  width: calc(var(--cbw) * var(--wu));
+}
+.qs-skip {
+  left: calc(var(--sx) * var(--wu));
+  width: calc(var(--sbw) * var(--wu));
+}
+.qs-btn-text {
+  font-size: calc(36 * var(--wu));
+  --ow: 2.8;
+}
+.qs-skip-text {
+  margin-top: calc(-14 * var(--wu));
+}
+.qs-price {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-6 * var(--wu));
+  transform: translateX(-50%);
+  font-size: calc(26 * var(--wu));
+  --ow: 2.2;
+}
+.qs-bar {
+  position: absolute;
+  left: calc((var(--cx) + 2) * var(--wu));
+  top: calc(102 * var(--wu));
+  width: calc(var(--bw) * var(--wu));
+  height: calc(38 * var(--wu));
+  background: #1d1b20;
+  border: max(1px, calc(3 * var(--wu))) solid var(--ink);
+  overflow: hidden;
+}
+.qs-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  max-width: 100%;
+  background: linear-gradient(#9a48ff, #7424f0);
+  transition: width 0.3s;
+}
+.qs-bar-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(28 * var(--wu));
+  --ow: 2.2;
+}
+.qs-foot {
+  margin-top: calc(4 * var(--wu));
+  font-size: max(10px, calc(20 * var(--wu)));
+  --ow: 1.6;
+  text-shadow: none;
+}
