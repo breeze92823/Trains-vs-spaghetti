@@ -108,8 +108,10 @@ function buildRamps(scene, statics, live, swirls) {
   const L = 7.5
   const Wd = 4.2
   const Hh = 4.6
+  const slots = [] // shop prompts for the ramp trains (shop.js); no plinth, so ramp: true
   for (const r of RAMPS) {
     const s = r.side
+    slots.push({ entry: r, x: r.x, z: r.z, top: 1.5, yaw: 0, ramp: true })
     blk(statics, lego(COLORS.yellowDark), L + 1.6, 0.4, Wd + 1.2, r.x, 0, r.z)
     const ramp = new Mesh(wedgeGeo(L, Wd, Hh), lego(COLORS.yellow))
     ramp.position.set(r.x - s * (L / 2), 0.4, r.z)
@@ -162,7 +164,11 @@ function buildRamps(scene, statics, live, swirls) {
     const label = sign([{ text: `X${r.mult} Best`, color: r.tag, size: 1.15 }, { text: r.name, color: '#ffffff', size: 0.85 }], 1.45)
     label.position.set(r.x + s * 1.5, 8.6, r.z)
     live.add(label)
+    const price = sign([{ icon: 'trophy', text: `${shortNumber(r.wins)} Wins`, color: ['#fff27a', '#ffbf1a'], size: 0.9 }, { text: `+${shortNumber(r.power)} Power`, color: ['#c8ffa0', '#3fe05a'], size: 0.7 }], 0.85)
+    price.position.set(r.x + s * 1.5, 6.6, r.z)
+    live.add(price)
   }
+  return slots
 }
 
 // --- Stalls ---------------------------------------------------------------------------------------
@@ -761,10 +767,11 @@ export function buildProps(scene) {
   const live = new Group()
   scene.add(live)
   const swirls = []
-  buildRamps(scene, statics, live, swirls)
+  const rampSlots = buildRamps(scene, statics, live, swirls)
   const locks = buildStalls(statics, live)
   const treads = buildTreadmills(scene, statics, live)
   const shopSlots = buildDisplay(statics, live)
+  for (const s of rampSlots) shopSlots.push({ ...s, index: shopSlots.length }) // RedRush / Ironheart follow the display trains
   const boardTextures = buildLeaderboards(statics, live)
   const portal = buildPortal(scene, statics, live)
   buildPumpkin(scene, statics)

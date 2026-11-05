@@ -1,4 +1,4 @@
-import { CONTAINERS, DISPLAY_TRAINS, GAME_SETTINGS, levelXp, POWER_GAIN, QUESTS, RAILCAR_TYPES, RAILCARS, REBIRTH, SHOP, START_STATE, TITLES } from './config.js'
+import { CONTAINERS, DISPLAY_TRAINS, GAME_SETTINGS, levelXp, POWER_GAIN, QUESTS, RAILCAR_TYPES, RAILCARS, RAMPS, REBIRTH, SHOP, START_STATE, TITLES, FRIEND_BOOST } from './config.js'
 import * as bloxity from './bloxity.js'
 
 // Game state: power, level / xp, wins, rebirths, autopilot, titles, railcars,
@@ -86,7 +86,11 @@ export function attachedRailcars() {
   return [...state.railcars].sort((a, b) => RAILCAR_TYPES[b.type].mult - RAILCAR_TYPES[a.type].mult).slice(0, RAILCARS.maxAttached)
 }
 export const railcarMult = () => 1 + attachedRailcars().reduce((s, r) => s + RAILCAR_TYPES[r.type].mult - 1, 0)
-export const powerMult = () => rebirthMult() * titleMult() * railcarMult()
+// Friends of the player in the same room (set by online.js): each adds FRIEND_BOOST.perFriend.
+let friendsHere = 0
+export const setFriendsHere = (n) => (friendsHere = Math.max(0, Math.min(FRIEND_BOOST.max, Math.floor(n) || 0)))
+export const friendMult = () => 1 + friendsHere * FRIEND_BOOST.perFriend
+export const powerMult = () => rebirthMult() * titleMult() * railcarMult() * friendMult()
 
 // --- Power / level / wins ----------------------------------------------------------------------
 // Raw add (also xp); rewards and packs use it as-is.
@@ -289,7 +293,9 @@ export async function buyContainer(id) {
 }
 
 // --- Trains (the shop on the west display, shop.js) --------------------------------------------------
-export const SHOP_TRAINS = DISPLAY_TRAINS.flat()
+export const DISPLAY_COUNT = DISPLAY_TRAINS.flat().length
+// The display trains, then the RedRush / Ironheart ramp trains (indices DISPLAY_COUNT, +1).
+export const SHOP_TRAINS = [...DISPLAY_TRAINS.flat(), ...RAMPS.map((r) => ({ wins: r.wins, power: r.power, name: r.name, train: r.train }))]
 export const ownsTrain = (i) => state.trainsOwned.includes(i)
 export const trainPower = () => SHOP_TRAINS[state.train]?.power ?? 1
 // Wins: spent, and the new train is equipped. Returns 'ok' | 'owned' | 'poor'.
@@ -297,7 +303,7 @@ export function buyTrain(i) {
   const t = SHOP_TRAINS[i]
   if (!t) return 'poor'
   if (ownsTrain(i)) return 'owned'
-  for (let j = 0; j < i; j++) if (!ownsTrain(j)) return 'locked' // every lower train must be bought first
+  for (let j = 0; j < Math.min(i, DISPLAY_COUNT); j++) if (!ownsTrain(j)) return 'locked' // every lower train must be bought first
   if (state.wins < t.wins) return 'poor'
   state.wins -= t.wins
   state.trainsOwned.push(i)

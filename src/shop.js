@@ -4,7 +4,7 @@ import { blk, lego } from './lego.js'
 import { createEmitter, removeEmitter } from './particles.js'
 import { paintSoftDot } from './textures.js'
 import { buildTrain } from './trains.js'
-import { buyTrain, equipTrain, onState, ownsTrain, SHOP_TRAINS, shortNumber, state } from './game.js'
+import { buyTrain, DISPLAY_COUNT, equipTrain, onState, ownsTrain, SHOP_TRAINS, shortNumber, state } from './game.js'
 import { createPrompt } from './prompt.js'
 
 // The train shop on the west display. hubProps builds the tiers, plinths, models and
@@ -25,9 +25,10 @@ function softDot() {
   return dotTex
 }
 
-const trainName = (i) => `Train ${i + 1}`
+const trainName = (i) => SHOP_TRAINS[i]?.name ?? `Train ${i + 1}`
 
 function buildSlot(scene, slot) {
+  if (slot.ramp) return { color: { set() {} } } // the ramp trains have no plinth to colour
   const D = DISPLAY
   const g = new Group()
   g.position.set(slot.x, slot.top, slot.z)
@@ -176,6 +177,7 @@ export function buildShop(scene, camera, slots, hud) {
       prompt.shake()
       let j = 0
       while (ownsTrain(j)) j++
+      if (j >= DISPLAY_COUNT) j = DISPLAY_COUNT - 1
       hud.toast(`Buy ${trainName(j)} first`)
     } else {
       prompt.shake()
@@ -207,7 +209,7 @@ export function buildShop(scene, camera, slots, hud) {
       const i = target.index
       const equipped = state.train === i
       let lowerMissing = false
-      for (let j = 0; j < i; j++) if (!ownsTrain(j)) lowerMissing = true
+      for (let j = 0; j < Math.min(i, DISPLAY_COUNT); j++) if (!ownsTrain(j)) lowerMissing = true
       const action = equipped ? 'Equipped' : ownsTrain(i) ? 'Equip' : lowerMissing ? 'Buy lower trains first' : `Buy ${shortNumber(SHOP_TRAINS[i].wins)} Wins`
       prompt.show(trainName(i), action, !equipped)
 

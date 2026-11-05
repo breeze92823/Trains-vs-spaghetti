@@ -355,10 +355,13 @@ export const HUB = {
   trees: 22,
 }
 
-// Ramps beside the gate: the best trains in the shop on a yellow launch ramp.
+// Ramps beside the gate: the best trains in the shop on a yellow launch ramp. They sit
+// past the last display train (power 3500 for 2.5M wins, ~700 wins per power): RedRush is
+// 2x its power (7000) and Ironheart 8x (28000), priced at the same ~700 / ~900 wins per
+// power. Bought with hold E like the display trains (shop.js), but need no lower train.
 export const RAMPS = [
-  { name: 'RedRush', mult: 2, x: -15, z: -50, side: -1, tag: '#ff3b3b', swirl: { color: '#ffffff', additive: true }, train: { kind: 'bullet', body: '#e8242c', stripe: '#ffd23a', window: '#1a1a24' } },
-  { name: 'Ironheart', mult: 8, x: 15, z: -50, side: 1, tag: '#3dff4a', swirl: { color: '#1a1d14', additive: false }, train: { kind: 'diesel', body: '#2c6b2a', stripe: '#f4d23a', roof: '#232323' } },
+  { name: 'RedRush', mult: 2, wins: 5000000, power: 7000, x: -15, z: -50, side: -1, tag: '#ff3b3b', swirl: { color: '#ffffff', additive: true }, train: { kind: 'bullet', body: '#e8242c', stripe: '#ffd23a', window: '#1a1a24' } },
+  { name: 'Ironheart', mult: 8, wins: 25000000, power: 28000, x: 15, z: -50, side: 1, tag: '#3dff4a', swirl: { color: '#1a1d14', additive: false }, train: { kind: 'diesel', body: '#2c6b2a', stripe: '#f4d23a', roof: '#232323' } },
 ]
 
 // Stalls north-west of the plaza.
@@ -618,6 +621,10 @@ const LANE_ROOMS = Array.from({ length: LANE_ROOM_COUNT }, (_, i) => {
   const wins = i < 3 ? [1, 2, 5][i] : [1, 2.5, 5][j % 3] * 10 ** (1 + Math.floor(j / 3))
   return { z0, z1: z0 - 42, halfWidth: 24, treadmill: 0, /* every lane room has the 1x belt */ reward: { mult: wins, wins } }
 })
+
+// Invite-friends benefit: each friend of the player currently in the same room adds this much to
+// every power gain (shown as "Friend boost +N%" in the HUD).
+export const FRIEND_BOOST = { perFriend: 0.1, max: 5 }
 
 export const LANE = {
   halfWidth: 8, // tunnel inner half-width (the gate opening is HUB.gate.halfGap)

@@ -537,6 +537,24 @@ export function attachChatBubble(THREE, root, message, height) {
 }
 
 // --- Friends / rooms ---------------------------------------------------------------
+// The player's Bloxity friends as [{ id, username }] (empty for guests / outside Bloxity).
+export async function friendList() {
+  try {
+    const list = (await sdk()?.getFriends?.()) ?? (await sdk()?.friends?.getFriends?.()) ?? []
+    return list.map((f) => ({ id: f._id ?? f.id, username: f.username }))
+  } catch {
+    return []
+  }
+}
+// Shareable link into this player's room (opens the game with ?roomId=), '' when unavailable.
+export function inviteLink() {
+  try {
+    const s = sdk()
+    return s?.getInviteFriendsLink?.() ?? s?.friends?.getInviteFriendsLink?.() ?? ''
+  } catch {
+    return ''
+  }
+}
 export function playerJoined(username) {
   try {
     sdk()?.game?.playerJoined?.(username)

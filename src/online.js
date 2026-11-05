@@ -9,14 +9,14 @@
 //   online.action(name)             one-shot action for the others ('horn', 'smash', 'steal', ...)
 import * as THREE from 'three'
 import { Vector3 } from 'three'
-import { AUDIO } from './config.js'
+import { AUDIO, FRIEND_BOOST } from './config.js'
 import * as bloxity from './bloxity.js'
 import { startNet } from './net.js'
 import { createRemotePlayers } from './remotePlayers.js'
 import { onKey } from './input.js'
 import { createPrompt } from './prompt.js'
 import { setVolume } from './audio/core.js'
-import { state } from './game.js'
+import { state, setFriendsHere, friendMult } from './game.js'
 import { player } from './player.js'
 import { sign } from './signs.js'
 
@@ -84,6 +84,38 @@ export function startOnline({ scene, camera, playerGroup, driver, props, hud, ge
     showChat(m, own ? playerGroup : remotes.byUid(m.userId)?.root)
   })
   online.say = (text) => showChat({ text, isLocalPlayer: true }, playerGroup) // dev helper
+
+  // --- Invite-friends benefit -------------------------------------------------------------
+  // Every friend of mine standing in the same room adds FRIEND_BOOST.perFriend to my power gains.
+  // The HUD's "Friend boost" tile copies my room's invite link.
+  let friends = []
+  const refreshFriends = async () => {
+    friends = await bloxity.friendList()
+  }
+  refreshFriends()
+  setInterval(refreshFriends, 60000)
+  function updateFriendBoost() {
+    const ids = new Set(friends.map((f) => f.id).filter(Boolean))
+    const names = new Set(friends.map((f) => f.username).filter(Boolean))
+    let n = 0
+    net.players()?.forEach((p, sid) => {
+      if (sid !== net.sessionId && p.signedIn && (ids.has(p.uid) || names.has(p.username))) n++
+    })
+    setFriendsHere(n)
+    hud?.setFriendBoost?.(Math.round(friendsNow() * 100), async () => {
+      const link = bloxity.inviteLink()
+      if (!link) return hud.toast('Invite friends from the Bloxity menu')
+      try {
+        await navigator.clipboard.writeText(link)
+        hud.toast(`Invite link copied! +${Math.round(FRIEND_BOOST.perFriend * 100)}% power per friend`)
+      } catch {
+        hud.toast(link)
+      }
+    })
+  }
+  const friendsNow = () => friendMult() - 1
+  setInterval(updateFriendBoost, 2000)
+  updateFriendBoost()
 
   // --- Leaderboards ---------------------------------------------------------------------
   const lb = props.leaderboards

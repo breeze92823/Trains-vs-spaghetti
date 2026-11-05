@@ -220,6 +220,12 @@ export function createHud({ onSettings, onAutopilot, onRebirth, onTitles, onQues
       setTimeout(() => p.remove(), rise ? 1700 : 1100)
     },
     // The "N POWER" line swells for a moment (a payout landed).
+    setFriendBoost(pct, onInvite) {
+      friend.firstChild.textContent = `Friend boost +${pct}%`
+      friend.style.cursor = 'pointer'
+      friend.onclick = onInvite
+      friend.style.pointerEvents = 'auto'
+    },
     bumpPower() {
       powerText.classList.remove('bump')
       void powerText.offsetWidth
