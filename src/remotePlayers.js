@@ -16,6 +16,7 @@ import { buildTrain, spinWheels } from './trains.js'
 import { createEmitter, removeEmitter } from './particles.js'
 import { createWagons } from './wagons.js'
 import { createDriver } from './driver.js'
+import { hornStart } from './audio/train.js'
 import { sign } from './signs.js'
 import { SHOP_TRAINS, state, titleById } from './game.js'
 import * as bloxity from './bloxity.js'
@@ -104,6 +105,7 @@ export function createRemotePlayers(scene, net, { onAction } = {}) {
   }
 
   function dispose(e) {
+    e.hornHandle?.stop()
     if (e.smoke) removeEmitter(e.smoke)
     e.driver.dispose()
     scene.remove(e.root)
@@ -159,6 +161,7 @@ export function createRemotePlayers(scene, net, { onAction } = {}) {
       }
       e.root.position.copy(e.pos)
       e.holder.rotation.y = e.yaw
+      e.hornHandle?.move(e.pos.x, e.pos.y + 1.2, e.pos.z) // a honk follows the moving train
 
       // Cull by distance.
       const dist = tmp.copy(e.pos).sub(camPos).length()
@@ -207,7 +210,17 @@ export function createRemotePlayers(scene, net, { onAction } = {}) {
       if (p.actionSeq !== e.actionSeq) {
         e.actionSeq = p.actionSeq
         if (p.action) {
-          if (p.action === 'horn' || p.action === 'wave') e.driver.leanOut(2.4, true)
+          if (p.action === 'horn' || p.action === 'honk' || p.action === 'wave') e.driver.leanOut(2.4, true)
+          // Their horn, heard from where their train is (louder the closer you are).
+          if (p.action === 'horn' || p.action === 'honk') {
+            e.hornHandle?.stop()
+            const kind = e.model?.userData.kind ?? 'steam'
+            e.hornHandle = dist < CULL ? hornStart(kind, { remote: true, max: p.action === 'honk' ? 6 : 1.4 }) : null
+            e.hornHandle?.move(e.pos.x, e.pos.y + 1.2, e.pos.z)
+          } else if (p.action === 'honkEnd') {
+            e.hornHandle?.stop()
+            e.hornHandle = null
+          }
           onAction?.(e, p.action)
         }
       }

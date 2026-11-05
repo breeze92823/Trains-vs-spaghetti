@@ -44,7 +44,7 @@ function button(className, html, fn) {
   return b
 }
 
-export function createHud({ onSettings, onAutopilot, onRebirth, onTitles, onQuests, onRailcars } = {}) {
+export function createHud({ onSettings, onAutopilot, onRebirth, onTitles, onQuests, onRailcars, onHonk } = {}) {
   const root = el('div', 'hud')
   let toastTimer = 0
   const toastEl = el('div', 'hud-toast ol')
@@ -115,11 +115,26 @@ export function createHud({ onSettings, onAutopilot, onRebirth, onTitles, onQues
   friend.append(text('friend-text', 'Friend boost +0%'))
   friend.insertAdjacentHTML('beforeend', `<span class="friend-icon">${svgIcon('plus')}</span>`)
 
+  // Honk: tap / click it, or press H (the keycap shows the key).
+  // Hold it to keep honking (onHonk(true) on press, onHonk(false) on release).
+  const honkBtn = button('lego btn-honk', '<span class="ol honk-text">HONK</span><span class="honk-key ol">H</span>', () => onHonk?.(true))
+  honkBtn.setAttribute('aria-label', 'Hold to honk the horn (H)')
+  let honkHeld = false
+  honkBtn.addEventListener('pointerdown', () => (honkHeld = true))
+  const honkRelease = () => {
+    if (!honkHeld) return
+    honkHeld = false
+    onHonk?.(false)
+  }
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) honkBtn.addEventListener(ev, honkRelease)
+  window.addEventListener('pointerup', honkRelease)
+  window.addEventListener('blur', honkRelease)
+
   const pops = el('div', 'hud-pops')
   const levelBanner = el('div', 'hud-levelup ol')
   const comboEl = el('div', 'hud-combo')
   const flashEl = el('div', 'hud-flash')
-  root.append(flashEl, top, left, right, bottom, friend, pops, levelBanner, comboEl, toastEl)
+  root.append(flashEl, top, left, right, bottom, friend, honkBtn, pops, levelBanner, comboEl, toastEl)
   document.body.appendChild(root)
 
   // --- Scale, Boxity's reserved corner, room for the touch controls ---
@@ -150,6 +165,7 @@ export function createHud({ onSettings, onAutopilot, onRebirth, onTitles, onQues
     const b = bottom.getBoundingClientRect()
     const bottomRoom = h - b.top // px the bottom group takes, from the screen's bottom edge
     friend.style.bottom = portrait ? `${bottomRoom + 6}px` : ''
+    honkBtn.style.bottom = portrait ? `${bottomRoom + 6 + 62 * u}px` : ''
     const floor = portrait ? bottomRoom + 50 * u + 8 : 70 * u
     // Left column: below the Boxity chat feed when they would overlap, shrunk to fit above the bottom HUD.
     let colTop = 195 * u

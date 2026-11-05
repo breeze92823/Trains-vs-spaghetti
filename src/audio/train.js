@@ -203,10 +203,11 @@ function notes(t, freqs, type, segments, { lp = 2400, gainK = 0.07, vib = 4, slu
   }
 }
 let hornAt = -1e9
-export function horn(kind = 'steam') {
-  if (!bus || !enabled || !ready()) return
+// manual: the player's Honk button / H key (short cooldown). Returns true if it sounded.
+export function horn(kind = 'steam', manual = false) {
+  if (!bus || !enabled || !ready()) return false
   const t0 = A.ctx.currentTime
-  if (t0 - hornAt < T.hornCooldown || !voice(1.6, 3)) return
+  if (t0 - hornAt < (manual ? 1.2 : T.hornCooldown) || !voice(1.6, 3)) return false
   hornAt = t0
   const t = now()
   const v = VOICE[kind] ?? 'steam'
@@ -221,8 +222,78 @@ export function horn(kind = 'steam') {
   }
 }
 
+// A horn held for as long as the button / H key is down (and for others' trains: `remote`
+// gives it its own 3D panner that follows `move(x, y, z)`). Returns { stop, move } or null.
+// It stops itself after `max` s (a release that never arrives).
+const HOLD = {
+  steam: { f: [523, 659, 784, 1046], type: 'triangle', lp: 3200, g: 0.06, vib: 5 },
+  diesel: { f: [311, 392, 466], type: 'sawtooth', lp: 2000, g: 0.05, vib: 1.5 },
+  electric: { f: [659, 831], type: 'square', lp: 2600, g: 0.035, vib: 2 },
+}
+export function hornStart(kind = 'steam', { remote = false, max = 6 } = {}) {
+  if (!bus || !enabled || !ready() || !voice(1.6, 3)) return null
+  const ctx = A.ctx
+  const h = HOLD[VOICE[kind] ?? 'steam']
+  const t = ctx.currentTime
+  const out = ctx.createGain()
+  out.gain.setValueAtTime(0.0001, t)
+  out.gain.linearRampToValueAtTime(h.g, t + 0.05)
+  let pan = null
+  if (remote) {
+    const lvl = ctx.createGain()
+    lvl.gain.value = T.level
+    pan = ctx.createPanner()
+    pan.panningModel = 'equalpower'
+    pan.distanceModel = 'inverse'
+    pan.refDistance = T.panner.refDistance
+    pan.rolloffFactor = T.panner.rolloff
+    pan.maxDistance = T.panner.maxDistance
+    out.connect(lvl).connect(pan).connect(A.engine)
+  } else out.connect(bus)
+  const f = filter(ctx, 'lowpass', h.lp, 0.9)
+  f.connect(out)
+  const lfo = ctx.createOscillator()
+  lfo.frequency.value = 5.5
+  const d = ctx.createGain()
+  d.gain.value = h.vib
+  lfo.connect(d)
+  const oscs = h.f.map((fr) => {
+    const o = ctx.createOscillator()
+    o.type = h.type
+    o.frequency.setValueAtTime(fr * 0.96, t)
+    o.frequency.exponentialRampToValueAtTime(fr, t + 0.08)
+    d.connect(o.frequency)
+    o.connect(f)
+    o.start(t)
+    return o
+  })
+  lfo.start(t)
+  let done = false
+  const stop = () => {
+    if (done) return
+    done = true
+    clearTimeout(timer)
+    const e = ctx.currentTime
+    out.gain.cancelScheduledValues(e)
+    out.gain.setValueAtTime(Math.max(out.gain.value, 0.0001), e)
+    out.gain.exponentialRampToValueAtTime(0.0001, e + 0.15)
+    for (const o of oscs) o.stop(e + 0.2)
+    lfo.stop(e + 0.2)
+  }
+  const timer = setTimeout(stop, max * 1000)
+  const move = (x, y, z) => {
+    if (!pan || done) return
+    if (pan.positionX) {
+      pan.positionX.value = x
+      pan.positionY.value = y
+      pan.positionZ.value = z
+    } else pan.setPosition(x, y, z)
+  }
+  return { stop, move }
+}
+
 // --- Per frame ----------------------------------------------------------------------------
-const pos = { x: 0, y: 0, z: 0 }
+const pos ={ x: 0, y: 0, z: 0 }
 const fwd = { x: 0, y: 0, z: -1 }
 let jointAt = 0
 let chuffAt = 0

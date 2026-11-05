@@ -447,6 +447,39 @@
   height: calc(42 * var(--u));
 }
 
+/* --- Honk button (key H) -------------------------------------------------------------------- */
+.btn-honk {
+  --c: #3b8bff;
+  position: absolute;
+  left: calc(var(--sl) + 45 * var(--u));
+  bottom: calc(var(--sb) + 80 * var(--u));
+  width: calc(210 * var(--u));
+  height: calc(64 * var(--u));
+  min-height: 44px;
+  gap: calc(12 * var(--u));
+}
+.honk-text {
+  font-size: calc(36 * var(--u));
+}
+.honk-key {
+  display: grid;
+  place-items: center;
+  width: calc(38 * var(--u));
+  height: calc(38 * var(--u));
+  min-width: 24px;
+  min-height: 24px;
+  font-size: calc(26 * var(--u));
+  color: var(--ink);
+  background: #fff;
+  border: calc(3 * var(--u)) solid var(--ink);
+  border-radius: calc(7 * var(--u));
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.hud.hud-hidden .btn-honk {
+  display: none;
+}
+
 /* --- Pops + toast ------------------------------------------------------------------------------- */
 .hud-pops {
   position: absolute;

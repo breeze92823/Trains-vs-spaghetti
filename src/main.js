@@ -29,7 +29,7 @@ import { createSettings } from './ui/settings.js'
 import { createRailcars } from './ui/railcars.js'
 import { createWagons } from './wagons.js'
 import * as sfx from './audio/sfx.js'
-import { hiss, horn, setTrainSoundsEnabled, updateTrainSounds } from './audio/train.js'
+import { hiss, horn, hornStart, setTrainSoundsEnabled, updateTrainSounds } from './audio/train.js'
 import { createDriver } from './driver.js'
 import { startOnline } from './online.js'
 
@@ -128,6 +128,33 @@ mountPlayerTrain(scene, train)
 // on departure and the brake hiss on stopping (audio/train.js).
 const driver = createDriver(train, { onDepart: (kind) => (horn(kind), online?.action('horn')), onStop: (peak, kind) => hiss(peak, kind) })
 const driverBump = (k, delay) => driver.bump(k, delay)
+// The Honk button / H key: the equipped train's horn, sounding while held. The others get
+// 'honk' on press and 'honkEnd' on release (>= 150 ms apart: the server rate-limits actions).
+let honking = null
+let honkAt = 0
+let honkEndTimer = 0
+function honk(on) {
+  if (on) {
+    if (honking) return
+    const model = train.children.find((c) => c.userData.cab)
+    honking = hornStart(model?.userData.kind ?? 'steam')
+    if (!honking) return
+    clearTimeout(honkEndTimer)
+    honkAt = performance.now()
+    online?.action('honk')
+    driver.leanOut?.(2.4, true)
+  } else if (honking) {
+    honking.stop()
+    honking = null
+    clearTimeout(honkEndTimer)
+    honkEndTimer = setTimeout(() => online?.action('honkEnd'), Math.max(0, 150 - (performance.now() - honkAt)))
+  }
+}
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyH' && !e.repeat && !(e.target instanceof HTMLInputElement)) honk(true)
+})
+window.addEventListener('keyup', (e) => e.code === 'KeyH' && honk(false))
+window.addEventListener('blur', () => honk(false))
 
 // Name tag: the equipped title (its colour) over "@name" over "Level N".
 const playerName = () => {
@@ -168,6 +195,7 @@ const hud = createHud({
   onRebirth: () => windows.rebirth.toggle(),
   onTitles: () => windows.titles.toggle(),
   onQuests: () => windows.quests.toggle(),
+  onHonk: honk,
   onRailcars: () => (railcarsUnlocked() ? windows.railcars.toggle() : hud.toast('Unlocks at 1 rebirth')),
   onAutopilot: () => {
     setAutopilot(!state.autopilot)
