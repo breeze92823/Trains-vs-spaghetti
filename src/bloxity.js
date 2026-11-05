@@ -453,7 +453,7 @@ function initExtras(SDK) {
 // The Bloxity user id, else a per-browser guest id (the server never saves `guest-` ids).
 export function userId() {
   const u = authState.user
-  const id = u && (u.id ?? u.userId ?? u.sub)
+  const id = u && (u._id ?? u.id ?? u.userId ?? u.sub)
   if (id) return String(id)
   const g = authState.guest
   const gid = g && (g.id ?? g.userId)
